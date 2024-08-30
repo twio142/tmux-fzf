@@ -12,9 +12,9 @@ while [ $(echo -ne "$tmux_fzf_menu_origin" | wc -l) -ge 2 ]; do
     tmux_fzf_menu_origin=$(echo "$tmux_fzf_menu_origin" | tail -n +3)$'\n'
 done
 
-target=$(printf "%s[cancel]" "$front_end_list" | eval "$TMUX_FZF_BIN $TMUX_FZF_OPTIONS")
+target=$(printf "$front_end_list" | eval "$TMUX_FZF_BIN $TMUX_FZF_OPTIONS")
 
-[[ "$target" == "[cancel]" || -z "$target" ]] && exit
+[[ -z "$target" ]] && exit
 # get the next line in $TMUX_FZF_MENU and execute
 
 if [[ -z "$TMUX_FZF_MENU_POPUP" ]]; then

@@ -1,3 +1,9 @@
+A custom fork of [sainnhe/tmux-fzf](https://github.com/sainnhe/tmux-fzf).
+
+- Remove the secondary menu for most features. Use key bindings to preform different actions instead.
+
+---
+
 ![demo](https://gitlab.com/sainnhe/img/-/raw/master/tmux-fzf.gif)
 
 # Features
