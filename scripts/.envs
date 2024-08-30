@@ -43,6 +43,10 @@ else
   [ -z "$TMUX_FZF_OPTIONS" ] && TMUX_FZF_OPTIONS="-m"
 fi
 
+BOLD=$'\033[1;36m'
+OFF=$'\033[0m'
+NL=$'\n'
+
 # Unset temporary variables and functions.
 unset \
   current_dir \
