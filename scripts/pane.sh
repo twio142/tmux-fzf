@@ -22,4 +22,5 @@ OPTS="--header='${BOLD}^J${OFF} join / ${BOLD}^B${OFF} break / ${BOLD}^X${OFF} k
 --bind=\"ctrl-s:execute(tmux swapp -s {1})+reload($reload)\" \
 --bind='return:execute(tmux switchc -t {1})+abort'"
 
-printf "$panes" | eval "$TMUX_FZF_BIN $TMUX_FZF_OPTIONS $OPTS $TMUX_FZF_PREVIEW_OPTIONS"
+current=$(tmux display-message -p '#S:#{window_index}.#{pane_index}: ')
+printf "$panes" | sed "/^$current/ s/$/ /" | eval "$TMUX_FZF_BIN $TMUX_FZF_OPTIONS $OPTS $TMUX_FZF_PREVIEW_OPTIONS"
