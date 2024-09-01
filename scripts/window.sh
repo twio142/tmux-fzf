@@ -28,7 +28,8 @@ OPTS="--header='${BOLD}^X${OFF} kill / ${BOLD}^R${OFF} rename / ${BOLD}^V${OFF} 
 --bind='ctrl-l:print(link)+accept' \
 --bind='return:execute(tmux switchc -t {1})+abort'"
 
-output=$(printf "$windows" | eval "$TMUX_FZF_BIN $TMUX_FZF_OPTIONS $OPTS $TMUX_FZF_PREVIEW_OPTIONS")
+current=$(tmux display-message -p '#S:#I: ')
+output=$(printf "$windows" | sed "/^$current/ s/$/ /" | eval "$TMUX_FZF_BIN $TMUX_FZF_OPTIONS $OPTS $TMUX_FZF_PREVIEW_OPTIONS")
 
 [ -z "$output" ] && exit 0
 action=$(echo "$output" | head -n1)

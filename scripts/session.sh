@@ -20,7 +20,8 @@ OPTS="--header='${BOLD}^D${OFF} detach / ${BOLD}^X${OFF} kill / ${BOLD}^N${OFF} 
 --bind=\"ctrl-r:print(rename)+accept\" \
 --bind='return:execute(tmux switchc -t {1})+abort'"
 
-output=$(printf "$sessions" | eval "$TMUX_FZF_BIN $TMUX_FZF_OPTIONS $OPTS $TMUX_FZF_PREVIEW_OPTIONS")
+current=$(tmux display-message -p '#S: ')
+output=$(printf "$sessions" | sed "/^$current/ s/$/ /" | eval "$TMUX_FZF_BIN $TMUX_FZF_OPTIONS $OPTS $TMUX_FZF_PREVIEW_OPTIONS")
 
 [ -z "$output" ] && exit 0
 action=$(echo "$output" | head -n1)
