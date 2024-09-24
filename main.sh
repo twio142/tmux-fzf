@@ -14,7 +14,6 @@ fi
 if [[ ! -z "$TMUX_FZF_MENU" ]]; then
   items_origin+=$'\nmenu'
 fi
-item=$(echo "${items_origin}" | $TMUX_FZF_BIN $TMUX_FZF_OPTIONS )
-[[ -z "$item" ]] && exit
+item=$(echo "${items_origin}" | $TMUX_FZF_BIN $TMUX_FZF_OPTIONS +m) || exit 0
 
 tmux run-shell -b "$CURRENT_DIR/scripts/${item}.sh || exit 0"
