@@ -11,6 +11,15 @@ else
   action="$1"
 fi
 
+edit_buffer() {
+  local tmpfile=$(mktemp /tmp/temp.XXXXXX)
+  tmux show-buffer -b "$1" > $tmpfile
+  tmux popup -E -w 75% nvim -- $tmpfile
+  local output=$(cat $tmpfile)
+  rm $tmpfile
+  echo "$output" | tmux load-buffer -b "$1" -
+}
+
 if [[ "$action" == "system" ]]; then
   item_numbers=$(copyq count)
   index=0
@@ -26,11 +35,17 @@ if [[ "$action" == "system" ]]; then
 elif [[ "$action" == "buffer" ]]; then
   reload="tmux list-buffers -F \\\"#{buffer_name}: #{buffer_sample}\\\""
   FZF_DEFAULT_OPTS="$FZF_DEFAULT_OPTS \
-  --header='${BOLD}^X${OFF} delete / ${BOLD}^C${OFF} copy / ${BOLD}^V${OFF} paste' \
+  --header='${BOLD}^X${OFF} delete / ${BOLD}^C${OFF} copy / ${BOLD}^V${OFF} paste / ${BOLD}^E${OFF} edit' \
   --bind=\"ctrl-x:execute(tmux delete-buffer -b {1})+reload($reload)\" \
   --bind='ctrl-c:execute(tmux show-buffer -b {1} | pbcopy)' \
-  --bind=\"ctrl-v:execute(pbpaste | tmux load-buffer -)+reload($reload)\""
-  selected_buffer=$(tmux list-buffers -F '#{buffer_name}: #{buffer_sample}' | eval "$TMUX_FZF_BIN $TMUX_FZF_OPTIONS --delimiter=':' --preview='tmux show-buffer -b {1}'" | sed 's/: .*$//')
-  [[ -z "$selected_buffer" ]] && exit
-  echo "$selected_buffer" | xargs -I{} sh -c 'tmux paste-buffer -b {}'
+  --bind=\"ctrl-v:execute(pbpaste | tmux load-buffer -)+reload($reload)\" \
+  --bind='ctrl-e:print(--edit)+accept'"
+  output=$(tmux list-buffers -F '#{buffer_name}: #{buffer_sample}' | eval "$TMUX_FZF_BIN $TMUX_FZF_OPTIONS --delimiter=':' --preview='tmux show-buffer -b {1}'" | sed 's/: .*$//')
+  [[ -z "$output" ]] && exit
+  if [ $(echo "$output" | head -n1) == '--edit' ]; then
+    buf=$(echo "$output" | sed '2!d')
+    edit_buffer "$buf"
+  else
+    echo "$output" | xargs -I{} sh -c 'tmux paste-buffer -b {}'
+  fi
 fi
