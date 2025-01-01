@@ -38,7 +38,7 @@ case "$action" in
   rename)
     echo "$output" | sed 's/: .*//' | while read win; do
       w=$(tmux lsp -t "$win" -F "#W" | head -n1)
-      tmux command-prompt -p 'Rename win:' -I "$w" "rename -t '$win' -- \"%%\""
+      tmux command-prompt -p 'Rename win:' -I "$w" "rename-window -t '$win' -- \"%%\""
     done;;
   move)
     # move window to another session
