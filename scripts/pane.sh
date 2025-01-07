@@ -14,11 +14,11 @@ else
   reload="tmux list-panes -a -F \\\"#S:#{window_index}.#{pane_index}: \$TMUX_FZF_PANE_FORMAT\\\""
 fi
 
-OPTS="--header='${BOLD}^J${OFF} join / ${BOLD}^B${OFF} break / ${BOLD}^X${OFF} kill / ${BOLD}^S${OFF} swap' \
+OPTS="--header='${BOLD}⌥J${OFF} join / ${BOLD}^B${OFF} break / ${BOLD}^X${OFF} kill / ${BOLD}^S${OFF} swap' \
 --delimiter=': ' \
 --bind=\"ctrl-b:execute(echo {+1} | tr ' ' '$NL' | xargs -I _ tmux breakp -s '_' -d)+reload($reload)\" \
 --bind=\"ctrl-x:execute(echo {+1} | tr ' ' '$NL' | xargs -I _ tmux killp -t '_')+reload($reload)\" \
---bind=\"ctrl-j:execute(echo {+1} | tr ' ' '$NL' | xargs -I _ tmux joinp -s '_')+reload($reload)\" \
+--bind=\"alt-j:execute(echo {+1} | tr ' ' '$NL' | xargs -I _ tmux joinp -s '_')+reload($reload)\" \
 --bind=\"ctrl-s:execute(tmux swapp -s {1})+reload($reload)\" \
 --bind='return:execute(tmux switchc -t {1})+abort'"
 
