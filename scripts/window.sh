@@ -16,8 +16,9 @@ if [[ -z "$TMUX_FZF_WINDOW_FORMAT" ]]; then
   windows=$(tmux list-windows $window_filter)
   reload="tmux list-windows $window_filter"
 else
-  windows=$(tmux list-windows $window_filter -F "#S:#{window_index}: $TMUX_FZF_WINDOW_FORMAT")
-  reload="tmux list-windows $window_filter -F \\\"#S:#{window_index}: \$TMUX_FZF_WINDOW_FORMAT\\\""
+  current=$(tmux display-message -p '#S:#I')
+  windows=$(tmux list-windows $window_filter -F "#S:#I: $TMUX_FZF_WINDOW_FORMAT #{?#{==:#S:#I,$current}, ,}")
+  reload="tmux list-windows $window_filter -F \\\"#S:#I: \$TMUX_FZF_WINDOW_FORMAT #{?#{==:#S:#I,$current}, ,}\\\""
 fi
 
 OPTS="--header='${BOLD}^X${OFF} kill / ${BOLD}^R${OFF} rename / ${BOLD}^V${OFF} move / ${BOLD}^L${OFF} link' \
@@ -28,8 +29,7 @@ OPTS="--header='${BOLD}^X${OFF} kill / ${BOLD}^R${OFF} rename / ${BOLD}^V${OFF} 
 --bind='ctrl-l:print(link)+accept' \
 --bind='return:execute(tmux switchc -t {1})+abort'"
 
-current=$(tmux display-message -p '#S:#I: ')
-output=$(printf "$windows" | sed "/^$current/ s/$/ /" | eval "$TMUX_FZF_BIN $TMUX_FZF_OPTIONS $OPTS $TMUX_FZF_PREVIEW_OPTIONS")
+output=$(printf "$windows" | eval "$TMUX_FZF_BIN $TMUX_FZF_OPTIONS $OPTS $TMUX_FZF_PREVIEW_OPTIONS")
 
 [ -z "$output" ] && exit 0
 action=$(echo "$output" | head -n1)

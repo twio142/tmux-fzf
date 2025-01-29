@@ -8,8 +8,9 @@ if [[ -z "$TMUX_FZF_SESSION_FORMAT" ]]; then
   sessions=$(tmux list-sessions)
   reload="tmux ls"
 else
-  sessions=$(tmux list-sessions -F "#S: $TMUX_FZF_SESSION_FORMAT")
-  reload="tmux ls -F \\\"#S: \$TMUX_FZF_SESSION_FORMAT\\\""
+  current=$(tmux display-message -p '#S')
+  sessions=$(tmux list-sessions -F "#S:: $TMUX_FZF_SESSION_FORMAT #{?#{==:#S,$current}, ,}")
+  reload="tmux ls -F \\\"#S:: \$TMUX_FZF_SESSION_FORMAT #{?#{==:#S,$current}, ,}\\\""
 fi
 
 OPTS="--header='${BOLD}^D${OFF} detach / ${BOLD}^X${OFF} kill / ${BOLD}^N${OFF} new / ${BOLD}^R${OFF} rename' \

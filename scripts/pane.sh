@@ -3,15 +3,16 @@
 CURRENT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$CURRENT_DIR/.envs"
 
-current_pane_origin=$(tmux display-message -p '#S:#{window_index}.#{pane_index}: #{window_name}')
-current_pane=$(tmux display-message -p '#S:#{window_index}.#{pane_index}')
+current_pane_origin=$(tmux display-message -p '#S:#I.#P: #{window_name}')
+current_pane=$(tmux display-message -p '#S:#I.#P')
 
 if [[ -z "$TMUX_FZF_PANE_FORMAT" ]]; then
-  panes=$(tmux list-panes -a -F "#S:#{window_index}.#{pane_index}: [#{window_name}:#{pane_title}] #{pane_current_command}  [#{pane_width}x#{pane_height}] [history #{history_size}/#{history_limit}, #{history_bytes} bytes] #{?pane_active,[active],[inactive]}")
-  reload="tmux list-panes -a -F \\\"#S:#{window_index}.#{pane_index}: [#{window_name}:#{pane_title}] #{pane_current_command}  [#{pane_width}x#{pane_height}] [history #{history_size}/#{history_limit}, #{history_bytes} bytes] #{?pane_active,[active],[inactive]}\\\""
+  panes=$(tmux list-panes -a -F "#S:#I.#P: [#{window_name}:#{pane_title}] #{pane_current_command}  [#{pane_width}x#{pane_height}] [history #{history_size}/#{history_limit}, #{history_bytes} bytes] #{?pane_active,[active],[inactive]}")
+  reload="tmux list-panes -a -F \\\"#S:#I.#P: [#{window_name}:#{pane_title}] #{pane_current_command}  [#{pane_width}x#{pane_height}] [history #{history_size}/#{history_limit}, #{history_bytes} bytes] #{?pane_active,[active],[inactive]}\\\""
 else
-  panes=$(tmux list-panes -a -F "#S:#{window_index}.#{pane_index}: $TMUX_FZF_PANE_FORMAT")
-  reload="tmux list-panes -a -F \\\"#S:#{window_index}.#{pane_index}: \$TMUX_FZF_PANE_FORMAT\\\""
+  current=$(tmux display-message -p '#S:#I.#P')
+  panes=$(tmux list-panes -a -F "#S:#I.#P: $TMUX_FZF_PANE_FORMAT #{?#{==:#S:#I.#P,$current}, ,}")
+  reload="tmux list-panes -a -F \\\"#S:#I.#P: \$TMUX_FZF_PANE_FORMAT #{?#{==:#S:#I.#P,$current}, ,}\\\""
 fi
 
 OPTS="--header='${BOLD}⌥J${OFF} join / ${BOLD}^B${OFF} break / ${BOLD}^X${OFF} kill / ${BOLD}^S${OFF} swap' \
@@ -22,5 +23,4 @@ OPTS="--header='${BOLD}⌥J${OFF} join / ${BOLD}^B${OFF} break / ${BOLD}^X${OFF}
 --bind=\"ctrl-s:execute(tmux swapp -s {1})+reload($reload)\" \
 --bind='return:execute(tmux switchc -t {1})+abort'"
 
-current=$(tmux display-message -p '#S:#{window_index}.#{pane_index}: ')
-printf "$panes" | sed "/^$current/ s/$/ /" | eval "$TMUX_FZF_BIN $TMUX_FZF_OPTIONS $OPTS $TMUX_FZF_PREVIEW_OPTIONS"
+printf "$panes" | eval "$TMUX_FZF_BIN $TMUX_FZF_OPTIONS $OPTS $TMUX_FZF_PREVIEW_OPTIONS"
