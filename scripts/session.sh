@@ -8,20 +8,20 @@ if [[ -z "$TMUX_FZF_SESSION_FORMAT" ]]; then
   sessions=$(tmux list-sessions)
   reload="tmux ls"
 else
-  current=$(tmux display-message -p '#S')
-  sessions=$(tmux list-sessions -F "#S:: $TMUX_FZF_SESSION_FORMAT #{?#{==:#S,$current}, ,}")
-  reload="tmux ls -F \\\"#S:: \$TMUX_FZF_SESSION_FORMAT #{?#{==:#S,$current}, ,}\\\""
+  sessions=$(tmux list-sessions -F "#S:: $TMUX_FZF_SESSION_FORMAT #{?#{==:#S,$(tmux display -p '#S')}, ,}" | sed -E "s/^([^ ]+)/${YELLOW}\1${OFF}/")
+  reload="tmux ls -F \\\"#S:: \$TMUX_FZF_SESSION_FORMAT #{?#{==:#S,\\\$(tmux display -p '#{client_session}')}, ,}\\\" | sed -E \\\"s/^([^ ]+)/${YELLOW}\\\\1${OFF}/\\\""
 fi
 
-OPTS="--header='${BOLD}^D${OFF} detach / ${BOLD}^X${OFF} kill / ${BOLD}^N${OFF} new / ${BOLD}^R${OFF} rename' \
+OPTS="--header='${BOLD}^N${OFF} new / ${BOLD}^X${OFF} kill / ${BOLD}^R${OFF} rename / ${BOLD}^D${OFF} detach / ${BOLD}⌥D${OFF} detach others' \
 --delimiter=':' \
---bind=\"ctrl-d:execute(echo {+1} | tr ' ' '$NL' | xargs -I _ tmux detach -s '_')+reload($reload)\" \
---bind=\"ctrl-x:execute(echo {+1} | tr ' ' '$NL' | xargs -I _ tmux kill-session -t '_')+reload($reload)\" \
 --bind=\"ctrl-n:execute(tmux new -d \\; switchc -n)+reload($reload)\" \
+--bind=\"ctrl-x:execute(echo {+1} | tr ' ' '$NL' | xargs -I _ tmux kill-session -t '_')+reload($reload)\" \
 --bind=\"ctrl-r:print(rename)+accept\" \
+--bind=\"ctrl-d:execute(tmux detach)\" \
+--bind=\"alt-d:execute(tmux detach -a)+reload($reload)\" \
 --bind='return:execute(tmux switchc -t {1})+abort'"
 
-output=$(printf "$sessions" | eval "$TMUX_FZF_BIN $TMUX_FZF_OPTIONS $OPTS $TMUX_FZF_PREVIEW_SESSION_OPTIONS")
+output=$(printf "$sessions" | eval "$TMUX_FZF_BIN $TMUX_FZF_OPTIONS $OPTS $TMUX_FZF_PREVIEW_SESSION_OPTIONS --ansi")
 
 [ -z "$output" ] && exit 0
 action=$(echo "$output" | head -n1)

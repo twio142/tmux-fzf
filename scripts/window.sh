@@ -13,12 +13,11 @@ else
 fi
 
 if [[ -z "$TMUX_FZF_WINDOW_FORMAT" ]]; then
-  windows=$(tmux list-windows $window_filter)
-  reload="tmux list-windows $window_filter"
+  windows=$(tmux list-windows $window_filter | sed -E "s/^([^ ]+)/${YELLOW}\1${OFF}/")
+  reload="tmux list-windows $window_filter | sed -E \\\"s/^([^ ]+)/${YELLOW}\\\\1${OFF}/\\\""
 else
-  current=$(tmux display-message -p '#S:#I')
-  windows=$(tmux list-windows $window_filter -F "#S:#I: $TMUX_FZF_WINDOW_FORMAT #{?#{==:#S:#I,$current}, ,}")
-  reload="tmux list-windows $window_filter -F \\\"#S:#I: \$TMUX_FZF_WINDOW_FORMAT #{?#{==:#S:#I,$current}, ,}\\\""
+  windows=$(tmux list-windows $window_filter -F "#S:#I: $TMUX_FZF_WINDOW_FORMAT #{?#{==:#S:#I,$(tmux display -p '#S:#I')}, ,}" | sed -E "s/^([^ ]+)/${YELLOW}\1${OFF}/")
+  reload="tmux list-windows $window_filter -F \\\"#S:#I: \$TMUX_FZF_WINDOW_FORMAT #{?#{==:#S:#I,\\\$(tmux display -p '#S:#I')}, ,}\\\" | sed -E \\\"s/^([^ ]+)/${YELLOW}\\\\1${OFF}/\\\""
 fi
 
 OPTS="--header='${BOLD}^X${OFF} kill / ${BOLD}^R${OFF} rename / ${BOLD}^V${OFF} move / ${BOLD}^L${OFF} link' \
@@ -29,7 +28,7 @@ OPTS="--header='${BOLD}^X${OFF} kill / ${BOLD}^R${OFF} rename / ${BOLD}^V${OFF} 
 --bind='ctrl-l:print(link)+accept' \
 --bind='return:execute(tmux switchc -t {1})+abort'"
 
-output=$(printf "$windows" | eval "$TMUX_FZF_BIN $TMUX_FZF_OPTIONS $OPTS $TMUX_FZF_PREVIEW_OPTIONS")
+output=$(printf "$windows" | eval "$TMUX_FZF_BIN $TMUX_FZF_OPTIONS $OPTS $TMUX_FZF_PREVIEW_OPTIONS --ansi")
 
 [ -z "$output" ] && exit 0
 action=$(echo "$output" | head -n1)
