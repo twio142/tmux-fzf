@@ -29,7 +29,7 @@ if [[ "$action" == "system" ]]; then
     contents="${contents}copy${index}: ${_content}\n"
     index=$((index + 1))
   done
-  copyq_index=$(printf "$contents" | eval "$TMUX_FZF_BIN $TMUX_FZF_OPTIONS --preview=\"echo {} | sed -e 's/^copy//' -e 's/: .*//' | xargs -I{} copyq read {}\"" | sed -e 's/^copy//' -e 's/: .*//')
+  copyq_index=$(printf "$contents" | eval "$TMUX_FZF_BIN $TMUX_FZF_OPTIONS --preview=\"echo {} | sed -e 's/^copy//' -e 's/: .*//' | xargs -I{} copyq read {}\" --preview-window=wrap" | sed -e 's/^copy//' -e 's/: .*//')
   [[ -z "$copyq_index" ]] && exit
   echo "$copyq_index" | xargs -I{} sh -c 'tmux set-buffer -b _temp_tmux_fzf "$(copyq read {})" && tmux paste-buffer -b _temp_tmux_fzf && tmux delete-buffer -b _temp_tmux_fzf'
 elif [[ "$action" == "buffer" ]]; then
@@ -40,7 +40,7 @@ elif [[ "$action" == "buffer" ]]; then
   --bind='ctrl-c:execute(tmux show-buffer -b {1} | pbcopy)' \
   --bind=\"ctrl-v:execute(pbpaste | tmux load-buffer -)+reload($reload)\" \
   --bind='ctrl-e:print(--edit)+accept'"
-  output=$(tmux list-buffers -F '#{buffer_name}  #{buffer_sample}' | sed -E "s/^([^ ]+)/${YELLOW}\1${OFF}/" | eval "$TMUX_FZF_BIN $TMUX_FZF_OPTIONS --ansi --delimiter='  ' --preview='tmux show-buffer -b {1}'" --accept-nth=1)
+  output=$(tmux list-buffers -F '#{buffer_name}  #{buffer_sample}' | sed -E "s/^([^ ]+)/${YELLOW}\1${OFF}/" | eval "$TMUX_FZF_BIN $TMUX_FZF_OPTIONS --ansi --delimiter='  ' --preview='tmux show-buffer -b {1}' --preview-window=wrap " --accept-nth=1)
   [[ -z "$output" ]] && exit
   if [ $(echo "$output" | head -n1) == '--edit' ]; then
     buf=$(echo "$output" | sed '2!d')
