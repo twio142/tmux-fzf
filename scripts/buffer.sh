@@ -36,16 +36,11 @@ elif [[ "$action" == "buffer" ]]; then
   reload="tmux list-buffers -F \\\"#{buffer_name}  #{buffer_sample}\\\" | sed -E \\\"s/^([^ ]+)/${YELLOW}\\\\1${OFF}/\\\""
   FZF_DEFAULT_OPTS="$FZF_DEFAULT_OPTS \
   --header='${BOLD}^X${OFF} delete / ${BOLD}^C${OFF} copy / ${BOLD}^V${OFF} paste / ${BOLD}^E${OFF} edit' \
-  --bind=\"ctrl-x:execute(tmux delete-buffer -b {1})+reload($reload)\" \
+  --bind='enter:execute(echo {+1} | xargs -I_ -n 1 tmux pasteb -b _ \\; send Space)+cancel' \
+  --bind=\"ctrl-x:execute(echo {+1} | xargs -n 1 tmux deleteb -b)+reload($reload)\" \
   --bind='ctrl-c:execute(tmux show-buffer -b {1} | pbcopy)' \
   --bind=\"ctrl-v:execute(pbpaste | tmux load-buffer -)+reload($reload)\" \
-  --bind='ctrl-e:print(--edit)+accept'"
-  output=$(tmux list-buffers -F '#{buffer_name}  #{buffer_sample}' | sed -E "s/^([^ ]+)/${YELLOW}\1${OFF}/" | eval "$TMUX_FZF_BIN $TMUX_FZF_OPTIONS --ansi --delimiter='  ' --preview='tmux show-buffer -b {1}' --preview-window=wrap " --accept-nth=1)
-  [[ -z "$output" ]] && exit
-  if [ $(echo "$output" | head -n1) == '--edit' ]; then
-    buf=$(echo "$output" | sed '2!d')
-    edit_buffer "$buf"
-  else
-    echo "$output" | xargs -I{} sh -c 'tmux paste-buffer -b {}'
-  fi
+  --bind='ctrl-e:become(echo {1})+cancel'"
+  output=$(tmux list-buffers -F '#{buffer_name}  #{buffer_sample}' | sed -E "s/^([^ ]+)/${YELLOW}\1${OFF}/" | eval "$TMUX_FZF_BIN $TMUX_FZF_OPTIONS --ansi --delimiter='  ' --preview='tmux show-buffer -b {1}' --preview-window=wrap ")
+  [[ -z "$output" ]] || edit_buffer "$output"
 fi
