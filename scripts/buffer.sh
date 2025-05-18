@@ -34,7 +34,7 @@ if [[ "$action" == "system" ]]; then
   echo "$copyq_index" | xargs -I{} sh -c 'tmux set-buffer -b _temp_tmux_fzf "$(copyq read {})" && tmux paste-buffer -b _temp_tmux_fzf && tmux delete-buffer -b _temp_tmux_fzf'
 elif [[ "$action" == "buffer" ]]; then
   reload="tmux list-buffers -F \\\"#{buffer_name}  #{buffer_sample}\\\" | sed -E \\\"s/^([^ ]+)/${YELLOW}\\\\1${OFF}/\\\""
-  FZF_DEFAULT_OPTS="$FZF_DEFAULT_OPTS \
+  TMUX_FZF_OPTIONS="$TMUX_FZF_OPTIONS \
   --header='${BOLD}^X${OFF} delete / ${BOLD}^C${OFF} copy / ${BOLD}^V${OFF} paste / ${BOLD}^E${OFF} edit' \
   --bind='enter:execute(echo {+1} | xargs -I_ -n 1 tmux pasteb -b _ \\; send Space)+cancel' \
   --bind=\"ctrl-x:execute(echo {+1} | xargs -n 1 tmux deleteb -b)+reload($reload)\" \

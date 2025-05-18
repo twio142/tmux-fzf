@@ -43,7 +43,7 @@ select-word    Select the current word
 start-of-line    Move the cursor to the start of the line
 top-line    Move to the top line of the buffer"
 
-FZF_DEFAULT_OPTS="$FZF_DEFAULT_OPTS --header='Select a copy-mode command.'"
+TMUX_FZF_OPTIONS="$TMUX_FZF_OPTIONS --header='Select a copy-mode command.'"
 CURRENT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$CURRENT_DIR/.envs"
 

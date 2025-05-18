@@ -3,7 +3,7 @@
 CURRENT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$CURRENT_DIR/.envs"
 
-FZF_DEFAULT_OPTS="$FZF_DEFAULT_OPTS --header='Select an action.'"
+TMUX_FZF_OPTIONS="$TMUX_FZF_OPTIONS --header='Select an action.'"
 if [[ -z "$1" ]]; then
     if [ -x "$(command -v pstree)" ]; then
         action=$(printf "display\ntree\nterminate\nkill\ninterrupt\ncontinue\nstop\nquit\nhangup" | eval "$TMUX_FZF_BIN $TMUX_FZF_OPTIONS")
@@ -19,7 +19,7 @@ fi
 content_raw="$(ps aux)"
 header=$(echo "$content_raw" | head -n 1)
 content=$(echo "$content_raw" | sed 1d)
-FZF_DEFAULT_OPTS="$FZF_DEFAULT_OPTS --header='$header'"
+TMUX_FZF_OPTIONS="$TMUX_FZF_OPTIONS --header='$header'"
 ps_selected=$(printf "$content" | eval "$TMUX_FZF_BIN $TMUX_FZF_OPTIONS")
 [[ -z "$ps_selected" ]] && exit
 pid=$(echo "$ps_selected" | awk -F ' ' '{print $2}')

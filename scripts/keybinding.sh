@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-FZF_DEFAULT_OPTS="$FZF_DEFAULT_OPTS --header='Select a key binding.'"
+TMUX_FZF_OPTIONS="$TMUX_FZF_OPTIONS --header='Select a key binding.'"
 CURRENT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$CURRENT_DIR/.envs"
 
