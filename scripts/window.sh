@@ -22,7 +22,7 @@ fi
 
 OPTS="--header='${BOLD}^X${OFF} kill / ${BOLD}^R${OFF} rename / ${BOLD}^V${OFF} move / ${BOLD}^L${OFF} link' \
 --delimiter=': ' \
---bind=\"ctrl-x:execute(echo {+} | tr ' ' '$NL' | xargs -I _ tmux unlink-window -k -t '_')+reload($reload)\" \
+--bind=\"ctrl-x:execute(echo {+1} | tr ' ' '$NL' | xargs -I _ tmux unlink-window -k -t '_')+reload($reload)\" \
 --bind='ctrl-r:print(rename)+accept' \
 --bind='ctrl-v:print(move)+accept' \
 --bind='ctrl-l:print(link)+accept' \
