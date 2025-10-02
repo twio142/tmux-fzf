@@ -41,6 +41,6 @@ elif [[ "$action" == "buffer" ]]; then
   --bind='ctrl-c:execute(tmux show-buffer -b {1} | pbcopy)' \
   --bind=\"ctrl-v:execute(pbpaste | tmux load-buffer -)+reload($reload)\" \
   --bind='ctrl-e:become(echo {1})+cancel'"
-  output=$(tmux list-buffers -F '#{buffer_name}  #{buffer_sample}' | sed -E "s/^([^ ]+)/${YELLOW}\1${OFF}/" | eval "$TMUX_FZF_BIN $TMUX_FZF_OPTIONS --ansi --delimiter='  ' --preview='tmux show-buffer -b {1}' --preview-window=wrap ")
+  output=$(tmux list-buffers -F '#{buffer_name}  #{buffer_sample}' | sed -E "s/^([^ ]+)/${YELLOW}\1${OFF}/" | eval "$TMUX_FZF_BIN $TMUX_FZF_OPTIONS --delimiter='  ' --preview='tmux show-buffer -b {1}' --preview-window=wrap ")
   [[ -z "$output" ]] || edit_buffer "$output"
 fi

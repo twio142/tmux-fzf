@@ -21,7 +21,7 @@ OPTS="--header='${BOLD}^N${OFF} new / ${BOLD}^X${OFF} kill / ${BOLD}^R${OFF} ren
 --bind=\"alt-d:execute(tmux detach -a)+reload($reload)\" \
 --bind='return:execute(tmux switchc -t {1})+abort'"
 
-output=$(printf "$sessions" | eval "$TMUX_FZF_BIN $TMUX_FZF_OPTIONS $OPTS $TMUX_FZF_PREVIEW_SESSION_OPTIONS --ansi")
+output=$(printf "$sessions" | eval "$TMUX_FZF_BIN $TMUX_FZF_OPTIONS $OPTS $TMUX_FZF_PREVIEW_OPTIONS")
 
 [ -z "$output" ] && exit 0
 action=$(echo "$output" | head -n1)

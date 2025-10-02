@@ -15,7 +15,7 @@ else
 fi
 
 OPTS="--header='${BOLD}⌥J${OFF} join / ${BOLD}^B${OFF} break / ${BOLD}^X${OFF} kill / ${BOLD}^S${OFF} swap' \
---delimiter=': ' --ansi \
+--delimiter=': ' \
 --bind=\"ctrl-b:execute(echo {+1} | tr ' ' '$NL' | xargs -I _ tmux breakp -s '_' -d)+reload($reload)\" \
 --bind=\"ctrl-x:execute(echo {+1} | tr ' ' '$NL' | xargs -I _ tmux killp -t '_')+reload($reload)\" \
 --bind=\"alt-j:execute(echo {+1} | tr ' ' '$NL' | xargs -I _ tmux joinp -s '_')+reload($reload)\" \
