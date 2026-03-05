@@ -7,14 +7,15 @@ current_pane_origin=$(tmux display-message -p '#S:#I.#P: #{window_name}')
 current_pane=$(tmux display-message -p '#S:#I.#P')
 
 if [[ -z "$TMUX_FZF_PANE_FORMAT" ]]; then
-  panes=$(tmux list-panes -a -F "#S:#I.#P: [#{window_name}:#{pane_title}] #{pane_current_command}  [#{pane_width}x#{pane_height}] [history #{history_size}/#{history_limit}, #{history_bytes} bytes] #{?pane_active,[active],[inactive]}" | sed -E "s/^([^ ]+)/${YELLOW}\1${OFF}/")
-  reload="tmux list-panes -a -F \\\"#S:#I.#P: [#{window_name}:#{pane_title}] #{pane_current_command}  [#{pane_width}x#{pane_height}] [history #{history_size}/#{history_limit}, #{history_bytes} bytes] #{?pane_active,[active],[inactive]}\\\" | sed -E \\\"s/^([^ ]+)/${YELLOW}\\\\1${OFF}/\\\""
+  panes=$(tmux list-panes -a -F "${YELLOW}#S:#I.#P:${OFF} [#{window_name}:#{pane_title}] #{pane_current_command}  [#{pane_width}x#{pane_height}] [history #{history_size}/#{history_limit}, #{history_bytes} bytes] #{?pane_active,[active],[inactive]}")
+  reload="tmux list-panes -a -F \\\"${YELLOW}#S:#I.#P:${OFF} [#{window_name}:#{pane_title}] #{pane_current_command}  [#{pane_width}x#{pane_height}] [history #{history_size}/#{history_limit}, #{history_bytes} bytes] #{?pane_active,[active],[inactive]}\\\""
 else
-  panes=$(tmux list-panes -a -F "#S:#I.#P: $TMUX_FZF_PANE_FORMAT #{?#{==:#S:#I.#P,$(tmux display -p '#S:#I.#P')}, ,}" | sed -E "s/^([^ ]+)/${YELLOW}\1${OFF}/")
-  reload="tmux list-panes -a -F \\\"#S:#I.#P: \$TMUX_FZF_PANE_FORMAT #{?#{==:#S:#I.#P,\\\$(tmux display -p '#S:#I.#P')}, ,}\\\" | sed -E \\\"s/^([^ ]+)/${YELLOW}\\\\1${OFF}/\\\""
+  panes=$(tmux list-panes -a -F "${YELLOW}#S:#I.#P:${OFF} $TMUX_FZF_PANE_FORMAT #{?#{==:#S:#I.#P,$(tmux display -p '#S:#I.#P')}, ,}")
+  reload="tmux list-panes -a -F \\\"${YELLOW}#S:#I.#P:${OFF} \$TMUX_FZF_PANE_FORMAT #{?#{==:#S:#I.#P,\\\$(tmux display -p '#S:#I.#P')}, ,}\\\""
 fi
 
 OPTS="--header='${BOLD}⌥J${OFF} join / ${BOLD}^B${OFF} break / ${BOLD}^X${OFF} kill / ${BOLD}^S${OFF} swap' \
+--preview-label=' Panes ' --preview-label-pos bottom \
 --delimiter=': ' \
 --bind=\"ctrl-b:execute(echo {+1} | tr ' ' '$NL' | xargs tmux breakp -d -s)+reload($reload)\" \
 --bind=\"ctrl-x:execute(echo {+1} | tr ' ' '$NL' | xargs tmux killp -t)+reload($reload)\" \

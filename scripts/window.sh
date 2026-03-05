@@ -13,14 +13,15 @@ else
 fi
 
 if [[ -z "$TMUX_FZF_WINDOW_FORMAT" ]]; then
-  windows=$(tmux list-windows $window_filter | sed -E "s/^([^ ]+)/${YELLOW}\1${OFF}/")
-  reload="tmux list-windows $window_filter | sed -E \\\"s/^([^ ]+)/${YELLOW}\\\\1${OFF}/\\\""
+  windows=$(tmux list-windows $window_filter)
+  reload="tmux list-windows $window_filter"
 else
-  windows=$(tmux list-windows $window_filter -F "#S:#I: $TMUX_FZF_WINDOW_FORMAT #{?#{==:#S:#I,$(tmux display -p '#S:#I')}, ,}" | sed -E "s/^([^ ]+)/${YELLOW}\1${OFF}/")
-  reload="tmux list-windows $window_filter -F \\\"#S:#I: \$TMUX_FZF_WINDOW_FORMAT #{?#{==:#S:#I,\\\$(tmux display -p '#S:#I')}, ,}\\\" | sed -E \\\"s/^([^ ]+)/${YELLOW}\\\\1${OFF}/\\\""
+  windows=$(tmux list-windows $window_filter -F "${YELLOW}#S:#I:${OFF} $TMUX_FZF_WINDOW_FORMAT #{?#{==:#S:#I,$(tmux display -p '#S:#I')}, ,}")
+  reload="tmux list-windows $window_filter -F \\\"${YELLOW}#S:#I:${OFF} \$TMUX_FZF_WINDOW_FORMAT #{?#{==:#S:#I,\\\$(tmux display -p '#S:#I')}, ,}\\\""
 fi
 
 OPTS="--header='${BOLD}^X${OFF} kill / ${BOLD}^R${OFF} rename / ${BOLD}^V${OFF} move / ${BOLD}^L${OFF} link' \
+--preview-label=' Windows ' --preview-label-pos bottom \
 --delimiter=': ' \
 --bind=\"ctrl-x:execute(echo {+1} | tr ' ' '$NL' | xargs -I _ tmux unlink-window -k -t '_')+reload($reload)\" \
 --bind='ctrl-r:print(rename)+accept' \
