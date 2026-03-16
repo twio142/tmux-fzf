@@ -32,8 +32,7 @@ OPTS="--header='${BOLD}^X${OFF} kill / ${BOLD}^R${OFF} rename / ${BOLD}^V${OFF} 
 output=$(printf "$windows" | eval "$TMUX_FZF_BIN $TMUX_FZF_OPTIONS $OPTS $TMUX_FZF_PREVIEW_OPTIONS")
 
 [ -z "$output" ] && exit 0
-action=$(echo "$output" | head -n1)
-output=$(echo "$output" | sed '1d')
+{ read -r action; output=$(cat); } <<< "$output"
 case "$action" in
   rename)
     echo "$output" | sed 's/: .*//' | while read win; do
