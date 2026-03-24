@@ -1,10 +1,9 @@
 #!/usr/bin/env bash
 
-TMUX_FZF_OPTIONS="$TMUX_FZF_OPTIONS --header='Select a key binding.'"
 CURRENT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$CURRENT_DIR/.envs"
 
-target=$(tmux list-keys | eval "$TMUX_FZF_BIN $TMUX_FZF_OPTIONS")
+target=$(tmux list-keys -a | eval "$TMUX_FZF_BIN $TMUX_FZF_OPTIONS")
 
 [[ -z "$target" ]] && exit
 if [[ -n $(echo "$target" | grep -o "copy-mode") && -z $(echo "$target" | grep -o "prefix") ]]; then
