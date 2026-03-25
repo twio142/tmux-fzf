@@ -67,9 +67,9 @@ This feature is not enabled by default. To enable it, add something like this to
 
 ```tmux
 TMUX_FZF_MENU=\
-"foo\necho 'Hello!'\n"\
-"bar\nls ~\n"\
-"sh\nsh ~/test.sh\n"
+"foo\techo 'Hello!'\n"\
+"bar\tls ~\n"\
+"sh\tsh ~/test.sh\n"
 ```
 
 When you launch tmux-fzf, an extra item named `menu` will appear. Selecting this item will produce [this](https://user-images.githubusercontent.com/37491630/66251156-71836000-e73c-11e9-809d-e865651f8d7d.png).
@@ -84,7 +84,7 @@ When you select `sh`, tmux will execute `sh ~/test.sh`.
 
 **Note:**
 
-- `foo` and `echo 'hello'` are separated by `\n` in `TMUX_FZF_MENU`, and you need to add another `\n` after `echo 'hello'`.
+- `foo` and `echo 'hello'` are separated by `\t` in `TMUX_FZF_MENU`, and you need to add another `\n` after `echo 'hello'`.
 - **DO NOT** add additional white spaces/tabs at the beginning of each line.
 - Commands are executed using `tmux -c`, so please make sure `tmux -c "your command"` does work.
 
@@ -98,13 +98,13 @@ Here each menu item (`name + command`) consist of 3 lines:
 
 ```tmux
 TMUX_FZF_MENU="\
-foo\n\              <- name
+foo\t\              <- name
 echo 'Hello!'\      <- command
 \n""\               <- end of line
-bar\n\
+bar\t\
 ls ~\
 \n""\
-sh\n\
+sh\t\
 sh ~/test.sh\
 \n""\
 nil--\n\n"          <- this is required
