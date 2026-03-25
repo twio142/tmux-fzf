@@ -14,8 +14,8 @@ case "$mode" in
     set_cmd="set-option"
     ;;
   env)
-    local_reload="tmux show-environment | sed '/^-/d; s/=/ /'"
-    global_reload="tmux show-environment -g | sed '/^-/d; s/=/ /'"
+    local_reload="bash $CURRENT_DIR/_env_list.sh"
+    global_reload="bash $CURRENT_DIR/_env_list.sh -g"
     local_label="Environment Variables"
     global_label="Global Environment Variables"
     set_cmd="set-environment"
