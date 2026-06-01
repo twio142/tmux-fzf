@@ -7,7 +7,7 @@ action="${1:-buffer}"
 
 edit_buffer() {
   local tmpfile=$(mktemp /tmp/tmux-buf.XXXXXX)
-  tmux show-buffer -b "$1" > $tmpfile
+  tmux showb -b "$1" > $tmpfile
   tmux popup -E -w 75% nvim -- $tmpfile
   local output=$(cat $tmpfile)
   rm $tmpfile
@@ -67,11 +67,12 @@ elif [[ "$action" == "buffer" ]]; then
   reload="tmux list-buffers -F \\\"${YELLOW}#{buffer_name}${OFF}  #{buffer_sample}\\\""
   TMUX_FZF_OPTIONS="$TMUX_FZF_OPTIONS \
   --preview-label=' Tmux Buffers ' --preview-label-pos bottom \
-  --header='${BOLD}^X${OFF} delete / ${BOLD}^C${OFF} copy / ${BOLD}^E${OFF} edit' \
+  --header='${BOLD}^X${OFF} delete / ${BOLD}^C${OFF} copy / ${BOLD}^Y${OFF} yank / ${BOLD}^E${OFF} edit' \
   --bind='enter:execute(echo {+1} | xargs -I_ -n 1 tmux pasteb -b _ \\; send Space)+cancel' \
   --bind=\"ctrl-x:execute(echo {+1} | xargs -n 1 tmux deleteb -b)+reload($reload)\" \
-  --bind='ctrl-c:execute(tmux show-buffer -b {1} | pbcopy)' \
+  --bind='ctrl-c:execute(tmux showb -b {1} | pbcopy)' \
+  --bind='ctrl-y:execute(tmux showb -b {1} | tmux loadb - \\; deleteb -b {1})+cancel' \
   --bind='ctrl-e:become(printf {1})+cancel'"
-  output=$(tmux list-buffers -F "${YELLOW}#{buffer_name}${OFF}  #{buffer_sample}" | eval "$TMUX_FZF_BIN $TMUX_FZF_OPTIONS --delimiter='  ' --preview='tmux show-buffer -b {1}' --preview-window=wrap ")
+  output=$(tmux list-buffers -F "${YELLOW}#{buffer_name}${OFF}  #{buffer_sample}" | eval "$TMUX_FZF_BIN $TMUX_FZF_OPTIONS --delimiter='  ' --preview='tmux showb -b {1}' --preview-window=wrap ")
   [[ -z "$output" ]] || edit_buffer "$output"
 fi
