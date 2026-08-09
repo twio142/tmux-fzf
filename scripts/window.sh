@@ -41,7 +41,7 @@ case "$action" in
     done;;
   move)
     # move window to another session
-    sess=$(tmux ls -F "#S" | eval "$TMUX_FZF_BIN $TMUX_FZF_OPTIONS --header 'Move to session' $TMUX_FZF_PREVIEW_OPTIONS")
+    sess=$(tmux ls -F "#S:" | eval "$TMUX_FZF_BIN $TMUX_FZF_OPTIONS --header 'Move to session' $TMUX_FZF_PREVIEW_OPTIONS")
     [[ -z "$sess" ]] && exit
     echo "$output" | sed 's/: .*//' | while read win; do
       tmux move-window -s "$win" -t "$sess"
