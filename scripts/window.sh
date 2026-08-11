@@ -41,11 +41,38 @@ case "$action" in
     done;;
   move)
     # move window to another session
-    sess=$(tmux ls -F "#S:" | eval "$TMUX_FZF_BIN $TMUX_FZF_OPTIONS --header 'Move to session' $TMUX_FZF_PREVIEW_OPTIONS")
+    sess_opts="--header='${BOLD}⌥N${OFF} new session' \
+--preview-label=' Move to session ' --preview-label-pos bottom \
+--print-query \
+--bind='alt-n:print(new)+accept'"
+    sess=$(tmux ls -F "#S:" | eval "$TMUX_FZF_BIN $TMUX_FZF_OPTIONS $sess_opts $TMUX_FZF_PREVIEW_OPTIONS")
+    [[ -z "$sess" ]] && exit
+    { read -r query; read -r sess; } <<< "$sess"
+    if [[ "$sess" == "new" ]]; then
+      # create a new session, named after the query if any
+      if [[ -z "$query" ]]; then
+        placeholder=$(tmux new -d -P -F "#{session_id}:#{window_id}")
+      elif tmux has -t "=$query" 2>/dev/null; then
+        # the name is taken, move into that session instead
+        sess="$query:"
+      else
+        placeholder=$(tmux new -d -P -F "#{session_id}:#{window_id}" -s "$query" 2>/dev/null)
+      fi
+      if [[ -n "$placeholder" ]]; then
+        # ids, not names: an auto-named session gets renumbered as windows move in
+        sess="${placeholder%%:*}:"
+        placeholder="${placeholder#*:}"
+      fi
+      [[ "$sess" == "new" ]] && exit
+    fi
     [[ -z "$sess" ]] && exit
     echo "$output" | sed 's/: .*//' | while read win; do
       tmux move-window -s "$win" -t "$sess"
-    done;;
+    done
+    # drop the new session's initial window, unless nothing was moved into it
+    if [[ -n "$placeholder" ]] && [[ $(tmux list-windows -t "$sess" | wc -l) -gt 1 ]]; then
+      tmux kill-window -t "$placeholder"
+    fi;;
   link)
     # link window to a window from another session
     tar=$(tmux display -p '#S:#I')

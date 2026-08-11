@@ -15,7 +15,7 @@ fi
 OPTS="--header='${BOLD}⌥N${OFF} new / ${BOLD}^X${OFF} kill / ${BOLD}^R${OFF} rename / ${BOLD}^D${OFF} detach / ${BOLD}⌥D${OFF} detach others' \
 --preview-label=' Sessions ' --preview-label-pos bottom \
 --delimiter=':' \
---bind=\"alt-n:execute(tmux new -d \\; switchc -n)+reload($reload)\" \
+--bind=\"alt-n:execute(if [ -n '{q}' ]; then tmux new -dP -F '#{session_name}' -s '{q}'; else tmux new -dP -F '#{session_name}'; fi | xargs -I _ tmux switchc -t '_')+reload($reload)\" \
 --bind=\"ctrl-x:execute(echo {+1} | tr ' ' '$NL' | xargs -I _ tmux kill-session -t '_')+reload($reload)\" \
 --bind=\"ctrl-r:print(rename)+accept\" \
 --bind=\"ctrl-d:execute(tmux detach)\" \
