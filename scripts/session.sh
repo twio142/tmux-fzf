@@ -12,10 +12,10 @@ else
   reload="tmux ls -F \\\"${YELLOW}#S::${OFF} \$TMUX_FZF_SESSION_FORMAT #{?#{==:#S,\\\$(tmux display -p '#{client_session}')}, ,}\\\""
 fi
 
-OPTS="--header='${BOLD}^N${OFF} new / ${BOLD}^X${OFF} kill / ${BOLD}^R${OFF} rename / ${BOLD}^D${OFF} detach / ${BOLD}⌥D${OFF} detach others' \
+OPTS="--header='${BOLD}⌥N${OFF} new / ${BOLD}^X${OFF} kill / ${BOLD}^R${OFF} rename / ${BOLD}^D${OFF} detach / ${BOLD}⌥D${OFF} detach others' \
 --preview-label=' Sessions ' --preview-label-pos bottom \
 --delimiter=':' \
---bind=\"ctrl-n:execute(tmux new -d \\; switchc -n)+reload($reload)\" \
+--bind=\"alt-n:execute(tmux new -d \\; switchc -n)+reload($reload)\" \
 --bind=\"ctrl-x:execute(echo {+1} | tr ' ' '$NL' | xargs -I _ tmux kill-session -t '_')+reload($reload)\" \
 --bind=\"ctrl-r:print(rename)+accept\" \
 --bind=\"ctrl-d:execute(tmux detach)\" \
