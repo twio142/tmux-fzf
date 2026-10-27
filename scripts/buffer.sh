@@ -8,7 +8,7 @@ action="${1:-buffer}"
 edit_buffer() {
   local tmpfile=$(mktemp /tmp/tmux-buf.XXXXXX)
   tmux showb -b "$1" > $tmpfile
-  tmux popup -E -w 75% nvim -- $tmpfile
+  tmux new-pane -O -B none -W -x 75% -y 50% -X 12% -Y 25% nvim -- $tmpfile
   local output=$(cat $tmpfile)
   rm $tmpfile
   printf "$output" | tmux load-buffer -b "$1" -
@@ -17,7 +17,7 @@ edit_buffer() {
 edit_clipboard() {
   local tmpfile=$(mktemp /tmp/tmux-buf.XXXXXX)
   echo "$1" > $tmpfile
-  tmux popup -E -w 75% nvim -- $tmpfile
+  tmux new-pane -O -B none -W -x 75% -y 50% -X 12% -Y 25% nvim -- $tmpfile
   local output=$(cat $tmpfile)
   rm $tmpfile
   printf "$output" | pbcopy
