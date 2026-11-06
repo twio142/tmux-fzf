@@ -14,7 +14,7 @@ else
   reload="tmux list-panes -a -F \\\"${YELLOW}#S:#I.#P:${OFF} \$TMUX_FZF_PANE_FORMAT #{?#{==:#S:#I.#P,\\\$(tmux display -p '#S:#I.#P')}, ,}\\\""
 fi
 
-OPTS="--header='${BOLD}⌥J${OFF} join / ${BOLD}^B${OFF} break / ${BOLD}^X${OFF} kill / ${BOLD}^S${OFF} swap / ${BOLD}^F${OFF} float' \
+OPTS="--header='${BOLD}⌥J${OFF} join / ${BOLD}^B${OFF} break / ${BOLD}^X${OFF} kill / ${BOLD}^S${OFF} swap / ${BOLD}^F${OFF} float / ${BOLD}^H${OFF} hide' \
 --preview-label=' Panes ' --preview-label-pos bottom \
 --delimiter=': ' \
 --bind=\"ctrl-b:execute(echo {+1} | tr ' ' '$NL' | xargs tmux breakp -d -s)+reload($reload)\" \
@@ -22,6 +22,7 @@ OPTS="--header='${BOLD}⌥J${OFF} join / ${BOLD}^B${OFF} break / ${BOLD}^X${OFF}
 --bind=\"alt-j:execute(echo {+1} | tr ' ' '$NL' | xargs tmux joinp -h -s)+reload($reload)\" \
 --bind=\"ctrl-s:execute(tmux swapp -s {1})+reload($reload)\" \
 --bind=\"ctrl-f:execute($CURRENT_DIR/float-toggle.sh {+1})+reload($reload)\" \
+--bind=\"ctrl-h:execute($CURRENT_DIR/hide-toggle.sh {+1})+reload($reload)\" \
 --bind='return:execute(tmux switchc -t {1})+abort'"
 
 printf "$panes" | eval "$TMUX_FZF_BIN $TMUX_FZF_OPTIONS $OPTS $TMUX_FZF_PREVIEW_OPTIONS"
